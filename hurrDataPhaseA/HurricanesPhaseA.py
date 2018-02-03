@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+# choose the file
 while True:
     selection = input('Enter the area name you want check, a for Atlantic, n for Nencpac: ')
 
