@@ -1,17 +1,19 @@
 import re
 from datetime import datetime
 
-# choose the file
+# choose a file to input(Atlantic/Nencpac)
 while True:
     selection = input('Enter the area name you want check, a for Atlantic, n for Nencpac: ')
 
     if selection is 'a':
         filename = 'hurdat2-1851-2016-041117.txt'
+        # the pattern to locate the headers in Atlantic file
         pattern = '(AL)+\d+'
         break
 
     if selection is 'n':
         filename = 'hurdat2-nepac-1949-2016-041317.txt'
+        # the pattern to locate the headers in Nencpac file
         pattern = '([CE]P)+\d+'
         break
 
@@ -19,9 +21,18 @@ while True:
         print("Cannot find the area.")
         continue
 
+# create a dictionary to store the data
 cyclone = {}
 
 def tidying(filename, pattern):
+    """
+    Group the data by system names and extract corresponding detail
+    
+    
+    :param filename:
+    :param pattern:
+    :return cyclone:
+    """
     with open(filename) as file:
 
         # storm_number = 0
@@ -29,6 +40,7 @@ def tidying(filename, pattern):
             linedata = lines.split(',')
 
             pat = re.compile(pattern)
+            # process the header lines
             if pat.search(linedata[0]) is not None:
                 cyc_number = linedata[0]
                 cyclone[cyc_number] = {}
@@ -41,6 +53,8 @@ def tidying(filename, pattern):
                 cyclone[cyc_number]['Track_Number'] = linedata[2].strip()
 
                 # storm_number += 1
+            
+            # process the content after header lines 
             else:
                 try:
                     cyclone[cyc_number]['Year'] = linedata[0][:4]
@@ -59,9 +73,10 @@ def tidying(filename, pattern):
 
 def year_storm_count(cyclone):
     """
+    Get the number of storms happened per year
 
     :param cyclone:
-    :return:
+    :return storm_per_year:
     """
     year = None
     storm_per_year = {}
@@ -80,9 +95,10 @@ def year_storm_count(cyclone):
 
 def date_range(cyclone):
     """
+    Get the date range of every storm
 
     :param cyclone:
-    :return:
+    :return drange:
     """
     drange = {}
     for storm in cyclone:
@@ -100,9 +116,10 @@ def date_range(cyclone):
 
 def max_of_storm(cyclone):
     """
+    Get the highest Maximum sustained wind and when it first occurred
 
     :param cyclone:
-    :return:
+    :return max_storm:
     """
     max_storm = {}
     for storm in cyclone:
@@ -122,9 +139,10 @@ def max_of_storm(cyclone):
 
 def year_hurr_count(storm_max):
     """
+    Get the number of hurricanes happened per year
 
     :param cyclone:
-    :return:
+    :return hurr_per_year:
     """
     storm_max = max_of_storm(cyclone)
     hurr_per_year = {}
