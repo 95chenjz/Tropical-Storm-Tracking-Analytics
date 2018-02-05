@@ -256,9 +256,10 @@ storm_dis = storm_distance(cyclone)
 storm_speed_max, storm_speed_mean = storm_speed(cyclone)
 
 for storm in cyclone:
-    if cyclone[storm]['Name'] != 'UNNAMED':
         print("======================================")
-        # print("Storm system name: " + cyclone[storm]['Name'])
+        print("Storm system ID: " + storm)
+        # if cyclone[storm]['Name'] != 'UNNAMED':
+            # print("Storm system name: " + cyclone[storm]['Name'])
         # print("Date range from " + date[storm][0] + " to " + date[storm][1])
         # print("The highest Maximum sustained wind (in knot): ", storm_max[storm][0], " at ", storm_max[storm][1])
         # print("It had ", cyclone[storm]['Landfall_Number'], " time(s) 'landfalls'.")
