@@ -191,14 +191,14 @@ storm_num = year_storm_count(cyclone)
 hurr_num = year_hurr_count(storm_max)
 storm_dis = storm_distance(cyclone)
 
-# for storm in cyclone:
-#     if cyclone[storm]['Name'] != 'UNNAMED':
-#         print("======================================")
+for storm in cyclone:
+    if cyclone[storm]['Name'] != 'UNNAMED':
+        print("======================================")
         # print("Storm system name: " + cyclone[storm]['Name'])
         # print("Date range from " + date[storm][0] + " to " + date[storm][1])
         # print("The highest Maximum sustained wind (in knot): ", storm_max[storm][0], " at ", storm_max[storm][1])
         # print("It had ", cyclone[storm]['Landfall_Number'], " time(s) 'landfalls'.")
-        # print(storm_dis[storm])
+        print(storm_dis[storm])
         # print(cyclone[storm]['LatLon'])
         #print(len(cyclone[storm]['LatLon']))
 

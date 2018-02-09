@@ -2,6 +2,7 @@ import datetime
 from pygeodesy import ellipsoidalVincenty as ev
 import re
 
+
 def read_one_HURDAT2_storm(file, storm_id=None) -> dict:
     """Read a single storm's data from a NOAA National Hurricane Center
     HURDAT2 file. The file pointer will be left in a spot ready to
@@ -36,9 +37,9 @@ def read_one_HURDAT2_storm(file, storm_id=None) -> dict:
         storm['num_rows'] = int(storm['num_rows'])
         storm['rows'] = []  # start with blank list of rows
         for r in range(storm['num_rows']):
-            line = file.readline()     # get one detail data row
+            line = file.readline()  # get one detail data row
             values = line.split(',')  # split into list of strings at commas
-            del values[-1]             # chop off the last value which is a newline
+            del values[-1]  # chop off the last value which is a newline
             # remove spaces from string values:
             for column in range(0, 6):
                 values[column] = values[column].strip(' ')
@@ -62,6 +63,7 @@ def get_max_wind_speed(storm: dict) -> int:
     for r in storm['rows']:  # loop through the rows
         highest = max(highest, r[6])  # update highest value found
     return highest
+
 
 def hours_elapsed(ts1: str, ts2: str) -> float:
     """Given 2 strings containing dates & clock times,
@@ -120,7 +122,7 @@ def myLatLon(lat: str, lon: str) -> ev.LatLon:
     return ev.LatLon(lat, lon)
 
 
-def print_date_range(rows:list):
+def print_date_range(rows: list):
     """
 
     :param rows:
@@ -135,9 +137,9 @@ def print_date_range(rows:list):
 def get_distance(start, end):
     distance = 0
     if start == end:
-       distance = 0
+        distance = 0
     else:
-       distance = start.distanceTo(end)
+        distance = start.distanceTo(end)
 
     return distance
 
@@ -149,11 +151,11 @@ def storm_speed(rows: list):
     speeds = []
     distance = 0
 
-    for i in range(len(rows)-1):
+    for i in range(len(rows) - 1):
         pre_start = myLatLon(rows[i][4], rows[i][5])
-        pre_end =  myLatLon(rows[i+1][4], rows[i+1][5])
+        pre_end = myLatLon(rows[i + 1][4], rows[i + 1][5])
         pre_distance = get_distance(pre_start, pre_end)
-        pre_time = hours_elapsed(rows[i][0]+rows[i][1], rows[i+1][0]+rows[i+1][1])
+        pre_time = hours_elapsed(rows[i][0] + rows[i][1], rows[i + 1][0] + rows[i + 1][1])
         speeds.append(pre_distance / pre_time)
         distance += pre_distance
 
@@ -161,23 +163,10 @@ def storm_speed(rows: list):
         speeds =
         distance += get_distance(rows)
 
-    if time == 0:
-        mean = 0
-    else:
-        mean = distance / time
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if time == 0:
+            mean = 0
+        else:
+            mean = distance / time
 
 
 def main():
@@ -229,7 +218,7 @@ def main():
         while True:
             s = read_one_HURDAT2_storm(f)
             if s is None:
-                break      # hit end of file
+                break  # hit end of file
 
             print(s['id'])
             # print('highest wind:', get_max_wind_speed(s), '\n')
