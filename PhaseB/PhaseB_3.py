@@ -395,7 +395,7 @@ print(rate)
         # print(storm_speed_max[storm][0])
         # print(storm_speed_mean[storm][0])
         # print(cyclone[storm][datetime])
-# print(storm_dis)
+print(storm_dis)
 # print(cyclone['AL122004']['200409160600'])
 
 
