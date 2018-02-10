@@ -1,3 +1,8 @@
+"""
+IS590PR Assignment 2: Tropical storm tracking analytics
+Jianzhang Chen, Yichong Guo, Chaohan Shang
+"""
+
 import datetime
 from pygeodesy import ellipsoidalVincenty as ev
 import re
@@ -53,6 +58,11 @@ def read_one_HURDAT2_storm(file, storm_id=None) -> dict:
     return storm
 
 def get_landfall_num(storm: dict):
+    """Given a HURDAT2 storm dictionary, return the times of landfalls of a storm.
+    This comes from column number 3 in the data rows.
+    :param storm: dictionary with all of one storm's data
+    :return: landfall times
+    """
     rows = storm['rows']
     landfall_num = 0
     for i in range(len(rows)):
@@ -134,9 +144,10 @@ def myLatLon(lat: str, lon: str) -> ev.LatLon:
 
 
 def print_date_range(storm: dict):
-    """
-    :param rows:
-    :return:
+    """Given a HURDAT2 storm dictionary, return the date range of the storm.
+    This is calculated with columns number 1 and 2 in every two data rows.
+    :param storm: dictionary with all of one storm's data
+    :return: the date range of the storm
     """
     rows = storm['rows']
     begin = datetime.datetime.strptime(rows[0][0] + rows[0][1], '%Y%m%d%H%M')
@@ -146,6 +157,11 @@ def print_date_range(storm: dict):
 
 
 def get_distance(start, end):
+    """Given start point and end point, return the distance between.
+    :param start: start point
+    :param end: end point
+    :return: distance between
+    """
     distance = 0
     if start == end:
         distance = 0
@@ -156,6 +172,10 @@ def get_distance(start, end):
 
 
 def storm_speed(storm: dict):
+    """Given a HURDAT2 storm dictionary, return the max and the mean speed of the storm.
+    :param storm: dictionary with all of one storm's data
+    :return: mean speed and mean speed
+    """
     rows = storm['rows']
 
     speeds = []
@@ -174,8 +194,6 @@ def storm_speed(storm: dict):
     time = hours_elapsed(rows[0][0] + rows[0][1], rows[-1][0] + rows[-1][1])
 
 
-        # distance += get_distance(rows)??????????????????????????????????????
-
     if time == 0:
         mean_speed = 0
         max_speed = 0
@@ -186,6 +204,10 @@ def storm_speed(storm: dict):
     return mean_speed, max_speed
 
 def same_value_index(value_list: list):
+    """Given a list of wind extent values, return the indices of the max values.
+    :param value_list: wind extent values
+    :return: the max values's indices
+    """
     max_value = max(value_list)
     index_list = []
     for i in range(len(value_list)):
@@ -194,7 +216,10 @@ def same_value_index(value_list: list):
     return index_list
 
 def dir_accurate_case(storm: dict):
-
+    """Given a HURDAT2 storm dictionary, return the number of valid cases and the number of accurate cases.
+    :param storm: dictionary with all of one storm's data
+    :return: the number of valid cases and the number of accurate cases
+    """
     rows = storm['rows']
 
     case = []
@@ -236,12 +261,29 @@ def dir_accurate_case(storm: dict):
     return accurate_case, case_num
 
 def get_year(storm: dict):
+    """Given a HURDAT2 storm dictionary, return the year of the storm.
+    This comes from the last 4 digits of storm ID
+    :param storm: dictionary with all of one storm's data
+    :return: the year of the storm
+    """
     return storm['id'][-4:]
 
 def count_storm(storm: dict, year: dict):
+    """
+    A counter for storm number per year
+    Given a HURDAT2 storm dictionary and the year of the storm.
+    :param storm: dictionary with all of one storm's data
+    :param year: the year of the storm
+    """
     year[storm['id'][-4:]][0] = year[storm['id'][-4:]][0] + 1
 
 def count_hurricane(storm: dict, year: dict):
+    """
+    A counter for hurricane number per year
+    Given a HURDAT2 storm dictionary and the year of the storm.
+    :param storm: dictionary with all of one storm's data
+    :param year: the year of the storm
+    """
     for i in storm['rows']:
         if i[6] >= 64:
             year[storm['id'][-4:]][1] = year[storm['id'][-4:]][1] + 1
@@ -251,83 +293,96 @@ def count_hurricane(storm: dict, year: dict):
 def main():
     """Script main, to be executed as a demonstration."""
 
-    # print('Demonstration of selected functions from this script...\n')
-    # a = myLatLon('43.2N', '359.1W')
-    # b = myLatLon('44.0N', '358.4W')
-    #
-    # meters = a.distanceTo(b)    # Calculate 'great circle' distance
-    # distance = meters / 1852.0  # Divide to convert meters into nautical miles
-    # bearing = a.bearingTo(b)
-    # knots = distance / 6        # nautical miles / hours = knots
-    # print('AL051952 later moved {:.2f} nm at initial heading of {:.2f} deg. \
-    #     at a speed of {:.2f} kts'.format(distance, bearing, knots))
-    #
-    # while True:
-    #     selection = input('Enter the area name you want check, a for Atlantic, n for Nencpac: ')
-    #
-    #     if selection is 'a':
-    #         filename = 'hurdat2-1851-2016-041117.txt
-    filename = 'hurdat2-1851-2016-041117.txt'
-    # the pattern to locate the headers in Atlantic file
-    # pattern = '(AL)+\d+'
-    pattern = '(AL)+\d+'
-    # break
+    # filename = 'hurdat2-1851-2016-041117.txt'
 
-    # if selection is 'n':
-    #     filename = 'hurdat2-nepac-1949-2016-041317.txt'
-    #     the pattern to locate the headers in Nencpac file
-    #     pattern = '([CE]P)+\d+'
-    #     break
-    #
-    # else:
-    #     print("Cannot find the area.")
-    #     continue
+    while True:
+        selection = input('Enter the area name you want check, a for Atlantic, n for Nencpac: ')
+
+        if selection is 'a':
+            filename = 'hurdat2-1851-2016-041117.txt'
+            break
+        if selection is 'n':
+            filename = 'hurdat2-nepac-1949-2016-041317.txt'
+            break
+        else:
+            print("Cannot find the area.")
+            continue
+
 
     overall_accurate_number = 0
     overall_case_number = 0
     year = {}
 
-    with open(filename, 'r') as f:
-        # try searching for a specific storm:
-        # s = read_one_HURDAT2_storm(f, 'AL172010')
-        # print(s)
-        #
-        # for lines in f:
-        #     linedata = lines.split(',')
-        #
-        #     pat = re.compile(pattern)
-        #     if pat.search(linedata[0]) is not None:
-        #         storm_id = linedata[0]
+    while True:
+        function = input('Enter the function you want, s for checking by storm, y for checking by year: ')
+        if function is 's':
+            storm_id = input("Type in the storm ID you want check or 'a' for all records: ")
 
-        while True:
-            s = read_one_HURDAT2_storm(f)
-            if s is None:
-                break  # hit end of file
-            accurate_number, case_number = dir_accurate_case(s)
-            overall_accurate_number += accurate_number
-            overall_case_number += case_number
-            print(s['id'])
-            print(s['name'])
-            print_date_range(s)
-            print('number of landfalls:', get_landfall_num(s))
-            max_wind, max_time = get_max_wind_speed(s)
-            print('highest wind:', max_wind, 'first occurs at:', max_time)
-            mean_speed, max_speed = storm_speed(s)
-            print('max speed:', max_speed)
-            print('mean speed:', mean_speed, '\n')
-            # print('highest wind:', get_max_wind_speed(s), '\n')
-            if get_year(s) not in year.keys():
-                year[get_year(s)] = [0, 0]
-            count_storm(s, year)
-            count_hurricane(s, year)
+            if storm_id == 'a':
+                storm_id = None
+            break
 
-    for y in year:
-        print('year', y, 'has', year[y][0], 'storms and', year[y][1], 'hurricanes.')
+        elif function is 'y':
+            storm_id = None
+            break
 
-    print('\n')
-    print('rates = ', overall_accurate_number / overall_case_number)
+        else:
+            print("Cannot find the function.")
+            continue
+
+    try:
+        with open(filename, 'r') as f:
+
+            s1 = 0
+
+            while True:
+
+                s = read_one_HURDAT2_storm(f, storm_id)
+
+                if s is None or (s == s1):
+                    break  # hit end of file
+
+                s1 = s
+                accurate_number, case_number = dir_accurate_case(s)
+                overall_accurate_number += accurate_number
+                overall_case_number += case_number
+
+                if function is 's':
+                    print('============================')
+                    print(s['id'])
+                    if s['name'] != 'UNNAMED':
+                        print(s['name'])
+                    print_date_range(s)
+                    print('number of landfalls:', get_landfall_num(s))
+                    max_wind, max_time = get_max_wind_speed(s)
+                    print('highest wind:', max_wind, 'first occurs at:', max_time)
+                    mean_speed, max_speed = storm_speed(s)
+                    print('max speed:', max_speed)
+                    print('mean speed:', mean_speed, '\n')
+
+                elif function is 'y':
+                    years = get_year(s)
+                    if years not in year.keys():
+                        year[years] = [0, 0]
+                    count_storm(s, year)
+                    count_hurricane(s, year)
 
 
+    except ValueError as ve:
+        print("Cannot find the storm.")
+
+
+
+    if function is 'y':
+        for y in year:
+            print('year', y, 'has', year[y][0], 'storms and', year[y][1], 'hurricanes.')
+
+    if storm_id is None:
+        print('\n')
+        print('Based on physics, we expect that the quadrant with the highest winds \n'
+              'should typically be somewhere between 45-90 degrees clockwise of the \n'
+              'storm’s recent direction of movement.')
+        print('The accuracy of this hypothesis is ', overall_accurate_number / overall_case_number)
 
 
 if __name__ == '__main__':
