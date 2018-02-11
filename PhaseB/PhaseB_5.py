@@ -71,7 +71,7 @@ def get_landfall_num(storm: dict):
     return landfall_num
 
 
-def get_max_wind_speed(storm: dict) -> int:
+def get_max_wind_speed(storm: dict):
     """Given a HURDAT2 storm dictionary, return the highest wind recorded.
     This comes from column number 6 in the data rows.
     :param storm: dictionary with all of one storm's data
@@ -83,6 +83,8 @@ def get_max_wind_speed(storm: dict) -> int:
         if r[6] > highest:  # update highest value found
             highest = r[6]
             max_datetime = datetime.datetime.strptime(r[0]+r[1], '%Y%m%d%H%M')
+    if highest == 0:
+        max_datetime = 'Not Applicable'
     return highest, max_datetime
 
 
@@ -193,7 +195,6 @@ def storm_speed(storm: dict):
 
     time = hours_elapsed(rows[0][0] + rows[0][1], rows[-1][0] + rows[-1][1])
 
-
     if time == 0:
         mean_speed = 0
         max_speed = 0
@@ -202,6 +203,7 @@ def storm_speed(storm: dict):
         max_speed = max(speeds)
 
     return mean_speed, max_speed
+
 
 def same_value_index(value_list: list):
     """Given a list of wind extent values, return the indices of the max values.
@@ -215,6 +217,7 @@ def same_value_index(value_list: list):
             index_list.append(i)
     return index_list
 
+
 def dir_accurate_case(storm: dict):
     """Given a HURDAT2 storm dictionary, return the number of valid cases and the number of accurate cases.
     :param storm: dictionary with all of one storm's data
@@ -226,7 +229,6 @@ def dir_accurate_case(storm: dict):
     accurate_case = 0
     case_num = 0
 
-
     for i in range(len(rows)-1):
         if len(set(rows[i][-4:])) != 1 or (len(set(rows[i][-4:])) == 1 and set(rows[i][-4:]) != {0} and set(rows[i][-4:]) != {-999}):
             case.append(same_value_index(rows[i][-4:]))
@@ -237,10 +239,8 @@ def dir_accurate_case(storm: dict):
         else:
             case.append([99])
 
-
         start = myLatLon(rows[i][4], rows[i][5])
         end = myLatLon(rows[i+1][4], rows[i+1][5])
-
 
         degree = start.bearingTo(end) if start != end else 0
 
@@ -249,7 +249,6 @@ def dir_accurate_case(storm: dict):
 
         degree_low = (degree_low-360) if degree_low > 360 else degree_low
         degree_high = (degree_high - 360) if degree_high > 360 else degree_high
-
 
         if case[i] != [99]:
             case_num += 1
@@ -260,6 +259,7 @@ def dir_accurate_case(storm: dict):
 
     return accurate_case, case_num
 
+
 def get_year(storm: dict):
     """Given a HURDAT2 storm dictionary, return the year of the storm.
     This comes from the last 4 digits of storm ID
@@ -267,6 +267,7 @@ def get_year(storm: dict):
     :return: the year of the storm
     """
     return storm['id'][-4:]
+
 
 def count_storm(storm: dict, year: dict):
     """
@@ -277,6 +278,7 @@ def count_storm(storm: dict, year: dict):
     """
     year[storm['id'][-4:]][0] = year[storm['id'][-4:]][0] + 1
 
+    
 def count_hurricane(storm: dict, year: dict):
     """
     A counter for hurricane number per year
@@ -307,7 +309,6 @@ def main():
         else:
             print("Cannot find the area.")
             continue
-
 
     overall_accurate_number = 0
     overall_case_number = 0
@@ -367,11 +368,8 @@ def main():
                     count_storm(s, year)
                     count_hurricane(s, year)
 
-
     except ValueError as ve:
         print("Cannot find the storm.")
-
-
 
     if function is 'y':
         for y in year:
